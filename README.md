@@ -1,6 +1,10 @@
 # Cloud Architect Portfolio – Moussa El Najmi
 Senior Cloud Architect | AWS | Hybrid Cloud | IaC | Security Architecture
 
+<!-- CI Badges -->
+![Terraform Validate](https://github.com/moussan/cloud-architect-portfolio/actions/workflows/terraform-validate.yml/badge.svg)
+![Terraform Security Scan](https://github.com/moussan/cloud-architect-portfolio/actions/workflows/terraform-security.yml/badge.svg)
+![Terraform Docs](https://github.com/moussan/cloud-architect-portfolio/actions/workflows/terraform-docs.yml/badge.svg)
 
 This repository contains a curated set of hands-on AWS architecture projects that demonstrate my skills as a Senior Cloud Architect:
 
