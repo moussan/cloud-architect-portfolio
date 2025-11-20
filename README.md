@@ -64,7 +64,7 @@ Each project lives under `projects/<project-name>` with:
 
 ### 4. Containerized App Deployment on EKS
 
-**Path:** `projects/04-eks-app-deployment/`  
+**Path:** `projects/04-eks-application-deployment/`  
 **Highlights:**
 
 - EKS cluster via Terraform module (optional)  
@@ -75,7 +75,7 @@ Each project lives under `projects/<project-name>` with:
 
 ### 5. Hybrid Cloud Architecture (DX + TGW + VPN)
 
-**Path:** `projects/05-hybrid-cloud/`  
+**Path:** `projects/05-hybrid-cloud-archityecture/`  
 **Highlights:**
 
 - Transit Gateway as the core routing hub  
