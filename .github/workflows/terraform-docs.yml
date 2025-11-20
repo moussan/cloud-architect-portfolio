@@ -18,8 +18,8 @@ jobs:
           - projects/01-ha-web-app/terraform
           - projects/02-serverless-pipeline/terraform
           - projects/03-landing-zone/terraform
-          - projects/04-eks-app-deployment/terraform
-          - projects/05-hybrid-cloud/terraform
+          - projects/04-eks-application-deployment/terraform
+          - projects/05-hybrid-cloud-architecture/terraform
           - projects/06-data-lake/terraform
 
     steps:
@@ -27,18 +27,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup terraform-docs
+        if: ${{ hashFiles(format('{0}/**/*.tf', matrix.project)) != '' }}
         uses: terraform-docs/gh-actions@v1.0.0
         with:
           version: v0.17.0
 
       - name: Run terraform-docs for ${{ matrix.project }}
+        if: ${{ hashFiles(format('{0}/**/*.tf', matrix.project)) != '' }}
         working-directory: ${{ matrix.project }}
         run: |
           mkdir -p .tfdocs
           terraform-docs markdown table . > .tfdocs/DOCS.md
 
+      - name: Skip (no Terraform in this project yet)
+        if: ${{ hashFiles(format('{0}/**/*.tf', matrix.project)) == '' }}
+        run: echo "Skipping terraform-docs for ${{ matrix.project }} – no Terraform files found."
+
       - name: Upload terraform-docs artifacts
-        if: ${{ matrix.project == 'projects/06-data-lake/terraform' }}
+        if: >
+          matrix.project == 'projects/06-data-lake/terraform' &&
+          hashFiles('projects/**/.tfdocs/DOCS.md') != ''
         uses: actions/upload-artifact@v4
         with:
           name: terraform-docs
