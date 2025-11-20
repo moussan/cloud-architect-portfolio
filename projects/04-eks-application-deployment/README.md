@@ -14,3 +14,6 @@ Deploying containerized workloads on Amazon EKS using:
 - Safe IAM integration via IRSA
 - CI/CD → EKS workflow
 - Ingress patterns
+
+
+### Assume cluster already exists and you’re just showing app deployment via Terraform’s Kubernetes provider + raw YAML.
