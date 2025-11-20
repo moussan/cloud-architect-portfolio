@@ -20,3 +20,6 @@ A multi-account AWS environment using:
 - shared services
 - dev
 - prod
+
+
+### This is conceptual scaffolding, not something you’ll run in your production org without tweaks.
