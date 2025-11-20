@@ -1,8 +1,6 @@
-# cloud-architect-portfolio
-Senior Cloud Architect | AWS | Hybrid Cloud | IaC | Security Architecture
-
 # Cloud Architect Portfolio – Moussa El Najmi
 
+Senior Cloud Architect | AWS | Hybrid Cloud | IaC | Security Architecture
 This repository contains a curated set of hands-on AWS architecture projects that demonstrate my skills as a Senior Cloud Architect:
 
 - Multi-account AWS landing zones
