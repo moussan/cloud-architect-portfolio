@@ -14,3 +14,6 @@ Hybrid connectivity model:
 - Enterprise-grade routing
 - Multi-account network architecture
 - High availability & failover routing
+
+
+### This is conceptual scaffolding – DX specifics depend on your provider.
