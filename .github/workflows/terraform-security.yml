@@ -1,0 +1,33 @@
+name: Terraform Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tfsec:
+    name: tfsec Security Scan
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project:
+          - projects/01-ha-web-app/terraform
+          - projects/02-serverless-pipeline/terraform
+          - projects/03-landing-zone/terraform
+          - projects/04-eks-app-deployment/terraform
+          - projects/05-hybrid-cloud/terraform
+          - projects/06-data-lake/terraform
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: ${{ matrix.project }}
+          # Optional: set to "WARN" if you don't want failures yet
+          soft_fail: false
