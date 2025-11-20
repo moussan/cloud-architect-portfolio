@@ -117,3 +117,10 @@ cd projects/01-ha-web-app/terraform
 terraform init
 terraform plan
 terraform apply
+```
+
+Tear down when done:
+
+```bash
+terraform destroy
+```
