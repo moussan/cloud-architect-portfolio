@@ -1,0 +1,45 @@
+name: Terraform Docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  generate-docs:
+    name: Generate terraform-docs
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project:
+          - projects/01-ha-web-app/terraform
+          - projects/02-serverless-pipeline/terraform
+          - projects/03-landing-zone/terraform
+          - projects/04-eks-app-deployment/terraform
+          - projects/05-hybrid-cloud/terraform
+          - projects/06-data-lake/terraform
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup terraform-docs
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          version: v0.17.0
+
+      - name: Run terraform-docs for ${{ matrix.project }}
+        working-directory: ${{ matrix.project }}
+        run: |
+          mkdir -p .tfdocs
+          terraform-docs markdown table . > .tfdocs/DOCS.md
+
+      - name: Upload terraform-docs artifacts
+        if: ${{ matrix.project == 'projects/06-data-lake/terraform' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-docs
+          path: projects/**/.tfdocs
