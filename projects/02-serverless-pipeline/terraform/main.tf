@@ -104,7 +104,7 @@ resource "aws_lambda_function" "processor" {
   handler       = "app.lambda_handler"
   runtime       = "python3.11"
 
-  filename         = "${path.module}/../build/lambda.zip"
+  filename = "${path.module}/../build/lambda.zip"
   # source_code_hash = filebase64sha256("${path.module}/../build/lambda.zip")
 
   environment {
