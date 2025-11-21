@@ -29,5 +29,6 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: ${{ matrix.project }}
-          # Let the build PASS even if issues are found (for portfolio/demo use)
+          # keep soft_fail true while you’re still iterating;
+          # flip to false later when you want red builds on issues
           soft_fail: true
