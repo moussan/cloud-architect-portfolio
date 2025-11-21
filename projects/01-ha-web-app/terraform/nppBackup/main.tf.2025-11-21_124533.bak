@@ -1,13 +1,13 @@
 
-# ---
+---
 
 ## 2️⃣ Project 1 – HA Web App (ALB + ASG + EC2)
 
-**Path:** "projects/01-ha-web-app/terraform/"
+**Path:** `projects/01-ha-web-app/terraform/`
 
 ### `main.tf`
 
-# ```hcl
+```hcl
 terraform {
   required_version = ">= 1.5.0"
 
