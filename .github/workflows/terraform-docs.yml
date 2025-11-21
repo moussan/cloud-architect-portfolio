@@ -26,19 +26,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup terraform-docs
+      # This step BOTH runs terraform-docs and writes a file for you.
+      - name: Run terraform-docs for ${{ matrix.project }}
         uses: terraform-docs/gh-actions@v1.0.0
         with:
-          version: v0.17.0
+          # directory containing the .tf files
+          working-dir: ${{ matrix.project }}
+          # write output into this file relative to working-dir
+          output-file: .tfdocs.md
+          # write to file instead of injecting into README
+          output-method: file
+          # optional, but keeps it simple: markdown table format
+          args: "markdown table ."
 
-      - name: Run terraform-docs for ${{ matrix.project }}
-        working-directory: ${{ matrix.project }}
-        run: |
-          mkdir -p .tfdocs
-          terraform-docs markdown table . > .tfdocs/DOCS.md
-
+      # Collect all generated docs as an artifact (optional but nice)
       - name: Upload terraform-docs artifacts
+        if: matrix.project == 'projects/06-data-lake/terraform'
         uses: actions/upload-artifact@v4
         with:
           name: terraform-docs
-          path: projects/**/.tfdocs
+          path: |
+            projects/**/.tfdocs.md
