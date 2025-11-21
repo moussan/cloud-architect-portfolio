@@ -26,13 +26,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # This single action call runs terraform-docs for each module
       - name: Generate docs for ${{ matrix.project }}
         uses: terraform-docs/gh-actions@v1.4.1
         with:
           working-dir: ${{ matrix.project }}
+          # Write docs into TF_DOCS.md in each terraform folder
           output-file: TF_DOCS.md
           output-method: replace
+          # no git-push, no config-file, no output-format – keep it simple
 
+      # Optional: collect all generated docs as an artifact
       - name: Upload terraform-docs artifacts
         if: matrix.project == 'projects/06-data-lake/terraform'
         uses: actions/upload-artifact@v4
