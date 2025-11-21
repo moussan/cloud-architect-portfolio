@@ -109,8 +109,8 @@ resource "aws_lambda_function" "processor" {
 
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.events.name
-      TOPIC_ARN  = aws_sns_topic.notifications.arn
+      TABLE_NAME  = aws_dynamodb_table.events.name
+      TOPIC_ARN   = aws_sns_topic.notifications.arn
       PROJECT_ENV = var.env
     }
   }
