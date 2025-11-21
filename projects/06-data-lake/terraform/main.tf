@@ -42,8 +42,8 @@ resource "aws_glue_database" "this" {
 }
 
 resource "aws_glue_crawler" "raw_crawler" {
-  name         = "${var.project_name}-raw-crawler"
-  role         = var.glue_role_arn
+  name          = "${var.project_name}-raw-crawler"
+  role          = var.glue_role_arn
   database_name = aws_glue_database.this.name
 
   s3_target {
