@@ -19,6 +19,17 @@ provider "aws" {
   region = var.region
 }
 
+resource "aws_kms_key" "datalake" {
+  description             = "KMS key for encrypting Data Lake S3 buckets and Athena"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
+resource "aws_kms_alias" "datalake" {
+  name          = "alias/${var.project_name}-kms"
+  target_key_id = aws_kms_key.datalake.key_id
+}
+
 resource "aws_s3_bucket" "raw" {
   bucket = "${var.project_name}-raw-${random_id.suffix.hex}"
 
@@ -43,6 +54,28 @@ resource "aws_s3_bucket" "processed" {
 
 resource "random_id" "suffix" {
   byte_length = 4
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "raw_encryption" {
+  bucket = aws_s3_bucket.raw.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.datalake.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "processed_encryption" {
+  bucket = aws_s3_bucket.processed.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.datalake.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
 }
 
 resource "aws_glue_catalog_database" "this" {
@@ -72,6 +105,10 @@ resource "aws_athena_workgroup" "this" {
   configuration {
     result_configuration {
       output_location = "s3://${aws_s3_bucket.processed.bucket}/athena-results/"
+      encryption_configuration {
+        encryption_option = "SSE_KMS"
+        kms_key_arn       = aws_kms_key.datalake.arn
+      }
     }
   }
 }

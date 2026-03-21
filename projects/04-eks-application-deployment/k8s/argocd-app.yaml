@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-web
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/moussan/cloud-architect-portfolio.git'
+    path: projects/04-eks-application-deployment/k8s
+    targetRevision: HEAD
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: sample-web
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
