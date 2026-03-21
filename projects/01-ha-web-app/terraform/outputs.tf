@@ -4,5 +4,5 @@ output "alb_dns_name" {
 }
 
 output "vpc_id" {
-  value = aws_vpc.this.id
+  value = module.vpc.vpc_id
 }

@@ -1,4 +1,12 @@
 terraform {
+  backend "s3" {
+    bucket         = "moussa-cloud-portfolio-tf-state"
+    key            = "projects/05-hybrid-cloud-architecture/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "moussa-cloud-portfolio-tf-locks"
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"

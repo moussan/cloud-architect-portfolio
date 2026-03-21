@@ -1,4 +1,12 @@
 terraform {
+  backend "s3" {
+    bucket         = "moussa-cloud-portfolio-tf-state"
+    key            = "projects/04-eks-application-deployment/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "moussa-cloud-portfolio-tf-locks"
+  }
+
   required_providers {
     kubernetes = {
       source  = "hashicorp/kubernetes"

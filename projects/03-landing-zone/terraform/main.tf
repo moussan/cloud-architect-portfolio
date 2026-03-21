@@ -3,6 +3,15 @@
 
 terraform {
   required_version = ">= 1.5.0"
+
+  backend "s3" {
+    bucket         = "moussa-cloud-portfolio-tf-state"
+    key            = "projects/03-landing-zone/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "moussa-cloud-portfolio-tf-locks"
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
