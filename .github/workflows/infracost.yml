@@ -1,39 +1,52 @@
-name: Infracost
+name: Infracost Cost Estimate
+
 on:
   pull_request:
-    types: [opened, synchronize, closed]
-  push:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
 
 jobs:
   infracost:
-    name: Infracost
+    name: Cost Diff on PR
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
 
     steps:
-      - name: Checkout PR branch
-        uses: actions/checkout@v3
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      - name: Generate Infracost cost estimate baseline
+      - name: Generate Infracost cost estimate (base)
         run: |
-          infracost breakdown --path . \
-                              --format=json \
-                              --out-file=/tmp/infracost.json
+          infracost breakdown --path=. \
+            --format=json \
+            --out-file=/tmp/infracost-base.json
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Generate Infracost cost estimate (PR)
+        run: |
+          infracost breakdown --path=. \
+            --format=json \
+            --out-file=/tmp/infracost-pr.json
 
       - name: Post Infracost comment
-        if: github.event_name == 'pull_request'
         run: |
-          infracost comment github --path=/tmp/infracost.json \
-                                   --repo=$GITHUB_REPOSITORY \
-                                   --github-token=${{github.token}} \
-                                   --pull-request=${{github.event.pull_request.number}} \
-                                   --behavior=update
+          infracost diff \
+            --path=/tmp/infracost-pr.json \
+            --compare-to=/tmp/infracost-base.json \
+            --format=github-comment \
+            --github-token=${{ secrets.GITHUB_TOKEN }} \
+            --pull-request=${{ github.event.pull_request.number }} \
+            --repo=${{ github.repository }}

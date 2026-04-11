@@ -1,98 +1,70 @@
-############################################
 # Terraform
-############################################
-
-# Local .terraform directories
 **/.terraform/
-
-# Terraform state files
 *.tfstate
 *.tfstate.*
-
-# Crash logs
+*.tfstate.backup
+tfplan
+*.tfplan
+*.tfvars
+!*.tfvars.example
 crash.log
 crash.*.log
-
-# Plan files
-*.tfplan
-*.tfplan.*
-
-# Override files
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+.terraformrc
+terraform.rc
 
-# Terraform variable files containing secrets
-*.tfvars
-*.tfvars.json
-
-############################################
-# Terragrunt
-############################################
-
-# Terragrunt cache
-.terragrunt-cache/
-
-############################################
-# Terraform Docs Output
-############################################
-
-.tfdocs/
-
-############################################
-# Python (Lambda / utils)
-############################################
-
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Virtualenv
+# Sensitive / local
 .env
-.venv
-env/
-venv/
+.env.*
+*.pem
+*.key
+*.crt
+secrets/
+credentials
 
-# Lambda build artifacts
-build/
-dist/
-*.zip
-
-############################################
-# Node / YAML pipelines (if needed later)
-############################################
-
-node_modules/
-package-lock.json
-npm-debug.log
-
-############################################
-# Editor / OS
-############################################
-
-# vscode
+# Editor artifacts
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+nppBackup/
 
-# macOS
+# OS
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Windows
 Thumbs.db
 
-############################################
-# GitHub Actions Temp
-############################################
+# Python (for Lambda)
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
 
-.github/workflows/*.tmp
-.github/workflows/*-logs/
+# Node (for CDK if used)
+node_modules/
+cdk.out/
 
-############################################
-# Logs
-############################################
+# Go (for tests)
+*.test
+*.out
 
-*.log
-logs/
+# Generated docs (kept in repo but excluded from certain contexts)
+# TERRAFORM_DOCS.md
+
+# Cost estimation artifacts
+.infracost/
+infracost-base.json
+
+# Security scan outputs
+tfsec-report.json
+checkov-report.json
+trivy-results.sarif
+checkov-results.sarif

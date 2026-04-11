@@ -1,0 +1,127 @@
+###############################################################################
+# terraform.tfvars.example
+# Hub-and-Spoke Network Architecture
+# Author: Moussa El Najmi, Senior AWS Solutions Architect
+#
+# Copy this file to terraform.tfvars and update with your values.
+# terraform.tfvars is gitignored — never commit actual values.
+#
+# Usage:
+#   cp terraform.tfvars.example terraform.tfvars
+#   vim terraform.tfvars
+#   terraform plan
+###############################################################################
+
+###############################################################################
+# GENERAL CONFIGURATION
+###############################################################################
+
+# AWS region for deployment.
+# Ensure the region has at least 3 AZs (all commercial regions do).
+aws_region = "us-east-1"
+
+# Short name prefix for all resources. Used in naming: ${project_name}-hub-vpc
+# Keep it short (≤20 chars), lowercase, no underscores.
+project_name = "acme-corp"
+
+# Environment tag. For the network layer, "network" is appropriate since this
+# infrastructure spans all environments.
+environment = "network"
+
+###############################################################################
+# VPC CIDR BLOCKS
+#
+# CRITICAL: These cannot be changed after deployment without destroying and
+# recreating VPCs. Verify these do NOT overlap with:
+#   - On-premises networks
+#   - Other AWS regions
+#   - VPN client pools
+#   - Other accounts you might peer with
+#
+# Example enterprise allocation:
+#   10.0.0.0/8     Total enterprise AWS pool
+#   10.0.0.0/16    Hub/Inspection VPC
+#   10.1.0.0/16    Production VPC
+#   10.2.0.0/16    Development VPC
+#   10.128.0.0/9   On-premises (reserved — never use in AWS)
+###############################################################################
+
+# Hub VPC: Hosts Network Firewall, NAT Gateways, centralized inspection
+hub_vpc_cidr = "10.0.0.0/16"
+
+# Production spoke VPC
+prod_vpc_cidr = "10.1.0.0/16"
+
+# Development spoke VPC
+dev_vpc_cidr = "10.2.0.0/16"
+
+###############################################################################
+# TRANSIT GATEWAY
+#
+# BGP ASN for the TGW. Used for BGP peering with Direct Connect and VPN.
+# If you have multiple TGWs (multi-region), each needs a unique ASN.
+# Private ASN ranges: 64512-65534 (16-bit) or 4200000000-4294967294 (32-bit).
+#
+# Common allocations:
+#   64512 — us-east-1 TGW
+#   64513 — eu-west-1 TGW
+#   64514 — ap-southeast-1 TGW
+###############################################################################
+
+tgw_asn = 64512
+
+###############################################################################
+# NETWORK FIREWALL
+#
+# Production: both should be true.
+# Initial deployment / testing: set firewall_alert_mode = true to observe
+# traffic patterns before enforcing the policy.
+###############################################################################
+
+# Prevent accidental deletion of the firewall.
+# Set false only when running terraform destroy intentionally.
+enable_firewall_delete_protection = true
+
+# true = ALERT mode (traffic flows, violations logged but not blocked)
+# false = ENFORCE mode (violations dropped) ← use in production
+# Start with true, review logs for 1-2 weeks, then flip to false.
+firewall_alert_mode = false
+
+###############################################################################
+# FLOW LOGS
+#
+# The S3 bucket should be in your Log Archive account (separate AWS account).
+# The bucket must have a resource-based policy allowing:
+#   Principal: "delivery.logs.amazonaws.com"
+#   Action: "s3:PutObject"
+#   Resource: "arn:aws:s3:::BUCKET_NAME/AWSLogs/*"
+#
+# See: https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html
+###############################################################################
+
+# Replace with your actual log archive bucket ARN.
+flow_logs_s3_bucket_arn = "arn:aws:s3:::acme-corp-log-archive-us-east-1"
+
+###############################################################################
+# ADDITIONAL TAGS
+#
+# These merge with default tags set in the provider block.
+# Use for: cost allocation codes, compliance labels, team ownership.
+###############################################################################
+
+additional_tags = {
+  # Cost allocation tag — maps to your financial reporting codes
+  CostCenter = "NET-001"
+
+  # Data classification for compliance
+  DataClassification = "Internal"
+
+  # Team that owns this infrastructure
+  Team = "cloud-networking"
+
+  # Ticket/RFC that provisioned this infrastructure (for audit trail)
+  ChangeRequest = "RFC-2025-0042"
+
+  # Compliance frameworks this infrastructure supports
+  Compliance = "PCI-DSS,SOC2,ISO27001"
+}

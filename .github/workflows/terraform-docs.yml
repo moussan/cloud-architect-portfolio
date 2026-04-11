@@ -1,41 +1,42 @@
 name: Terraform Docs
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [main]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
 
 jobs:
-  generate-docs:
-    name: Generate terraform-docs
+  terraform-docs:
+    name: Auto-generate Module Documentation
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        project:
-          - projects/01-ha-web-app/terraform
-          - projects/02-serverless-pipeline/terraform
-          - projects/03-landing-zone/terraform
-          - projects/04-eks-application-deployment/terraform
-          - projects/05-hybrid-cloud-architecture/terraform
-          - projects/06-data-lake/terraform
+        module:
+          - 01-governance/landing-zone/terraform
+          - 01-governance/iam/terraform
+          - 01-governance/scps/terraform
+          - 02-networking/hub-spoke/terraform
+          - 02-networking/vpc-design/terraform
+          - 03-iac/state-backend/terraform
+          - 03-iac/compute/terraform
+          - 03-iac/storage/terraform
+          - 03-iac/database/terraform
+          - 03-iac/modules/vpc
+          - 03-iac/modules/iam-role
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Generate docs for ${{ matrix.project }}
-        uses: terraform-docs/gh-actions@v1.4.1
         with:
-          working-dir: ${{ matrix.project }}
-          output-file: TF_DOCS.md
-          output-method: replace
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
 
-      - name: Upload terraform-docs artifacts
-        if: matrix.project == 'projects/06-data-lake/terraform'
-        uses: actions/upload-artifact@v4
+      - name: Render terraform-docs
+        uses: terraform-docs/gh-actions@v1.2.0
         with:
-          name: terraform-docs
-          path: projects/**/TF_DOCS.md
+          working-dir: ${{ matrix.module }}
+          output-file: TERRAFORM_DOCS.md
+          output-method: inject
+          git-push: "true"

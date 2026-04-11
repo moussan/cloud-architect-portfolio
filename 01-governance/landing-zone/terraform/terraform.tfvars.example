@@ -1,0 +1,82 @@
+###############################################################################
+# terraform.tfvars.example
+# Copy this file to terraform.tfvars and fill in your values.
+#
+# NEVER commit terraform.tfvars to source control — it contains sensitive
+# account information. It is listed in .gitignore by default.
+#
+# To use: cp terraform.tfvars.example terraform.tfvars
+###############################################################################
+
+###############################################################################
+# Terraform Backend (pass via -backend-config or a separate backend.hcl file)
+# These values configure where Terraform stores its state file.
+# The S3 bucket and DynamoDB table must be created BEFORE running terraform init.
+###############################################################################
+
+terraform_state_bucket      = "my-org-terraform-state-ca-central-1"   # Must be globally unique
+terraform_state_region      = "ca-central-1"
+terraform_state_lock_table  = "terraform-state-lock"
+# terraform_state_kms_key_arn = "arn:aws:kms:ca-central-1:123456789012:key/mrk-xxxxxxxxxxxx"
+
+###############################################################################
+# Organisation Configuration
+###############################################################################
+
+org_feature_set = "ALL_FEATURES"    # Do not change this
+primary_region  = "ca-central-1"
+
+# Regions where workloads are permitted to run.
+# The DenyNonAllowedRegions SCP blocks all other regions.
+# Add regions here before deploying workloads to them.
+allowed_regions = [
+  "ca-central-1", # Canada (Central) — primary region, PIPEDA-friendly
+  "us-east-1",    # US East (N. Virginia) — required for certain global services
+]
+
+###############################################################################
+# Management Account
+###############################################################################
+
+management_account_id    = "123456789012"             # Your management account ID
+management_account_email = "aws-management@example.com"
+
+###############################################################################
+# Member Account Emails
+# Each account requires a GLOBALLY UNIQUE email address.
+# Tip: Use email aliases — most email providers support user+alias@domain.com
+# e.g., aws+log-archive@example.com — delivers to aws@example.com
+###############################################################################
+
+# Security OU accounts
+log_archive_email      = "aws+log-archive@example.com"
+security_tooling_email = "aws+security-tooling@example.com"
+
+# Infrastructure OU accounts
+shared_services_email  = "aws+shared-services@example.com"
+
+# Workloads / Production OU accounts
+prod_app1_email        = "aws+prod-app-1@example.com"
+prod_app2_email        = "aws+prod-app-2@example.com"
+
+# Workloads / Non-Prod OU accounts
+dev_email              = "aws+dev@example.com"
+staging_email          = "aws+staging@example.com"
+
+# Sandbox OU accounts
+sandbox_email          = "aws+sandbox@example.com"
+
+###############################################################################
+# Tagging
+# These tags are applied to all taggable resources by the provider default_tags.
+# They supplement the organisation-level tag policy.
+###############################################################################
+
+default_tags = {
+  ManagedBy   = "terraform"
+  Repository  = "moussan/cloud-architect-portfolio"
+  Pillar      = "governance"
+  Module      = "landing-zone"
+  Owner       = "platform-team"
+  CostCenter  = "CC-PLATFORM-001"
+}

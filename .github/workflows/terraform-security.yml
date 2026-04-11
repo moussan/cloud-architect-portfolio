@@ -1,33 +1,69 @@
 name: Terraform Security Scan
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+    paths:
+      - '**/*.tf'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.tf'
 
 jobs:
   tfsec:
-    name: tfsec Security Scan
+    name: tfsec Static Analysis
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        project:
-          - projects/01-ha-web-app/terraform
-          - projects/02-serverless-pipeline/terraform
-          - projects/03-landing-zone/terraform
-          - projects/04-eks-application-deployment/terraform
-          - projects/05-hybrid-cloud-architecture/terraform
-          - projects/06-data-lake/terraform
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
-          working_directory: ${{ matrix.project }}
-          # Let the build PASS even if issues are found (for portfolio/demo use)
-          soft_fail: true
+          soft_fail: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  checkov:
+    name: Checkov Policy Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+          soft_fail: false
+
+      - name: Upload Checkov SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-results.sarif
+
+  trivy:
+    name: Trivy IaC Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
